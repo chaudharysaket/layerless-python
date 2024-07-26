@@ -6,13 +6,16 @@ Parameters:
     Type: String
     Description: Your New Relic account ID; necessary for distributed tracing.
     AllowedPattern: '[0-9]+'
+  NRLicenseKey:
+    Type: String
+    Description: Your New Relic License Key; necessary for telemetry.
 Resources:
   NewRelicExample:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: s3://nr-test-saket-layers-us-west-2/f21285a6bcb45b5b94e05be2f72b2d05
       Description: A simple Lambda, with New Relic telemetry
-      FunctionName: newrelic-example-python
+      FunctionName: newrelic-sam-example-python-saket
       Handler: newrelic_lambda_wrapper.handler
       Runtime: python3.10
       PackageType: Zip
@@ -21,10 +24,12 @@ Resources:
           NEW_RELIC_LAMBDA_HANDLER: app.lambda_handler
           NEW_RELIC_ACCOUNT_ID:
             Fn::Sub: ${NRAccountId}
-          NEW_RELIC_DATA_COLLECTION_TIMEOUT: 30s
+          NEW_RELIC_LICENSE_KEY:
+            Fn::Sub: ${NRLicenseKey}
           NEW_RELIC_EXTENSION_SEND_FUNCTION_LOGS: true
+          NEW_RELIC_EXTENSION_LOG_LEVEL: DEBUG
       Layers:
-      - Fn::Sub: arn:${AWS::Partition}:lambda:${AWS::Region}:451483290750:layer:NewRelicPython310:1
+      - Fn::Sub: arn:${AWS::Partition}:lambda:${AWS::Region}:451483290750:layer:NewRelicPython310:30
       Policies:
       - AWSSecretsManagerGetSecretValuePolicy:
           SecretArn:
